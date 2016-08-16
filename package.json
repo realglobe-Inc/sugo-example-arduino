@@ -1,0 +1,95 @@
+{
+  "name": "sugo-example-arduino",
+  "version": "1.0.0",
+  "description": "SUGOS example of Arduino",
+  "main": "lib",
+  "bin": {
+    "sugo-example-arduino": "./bin/cli.js"
+  },
+  "scripts": {
+    "actor": "./bin/actor.js",
+    "caller": "./bin/caller.js",
+    "debug": "./ci/watch.js & DEBUG=sg:* ./bin/hub.js",
+    "hub": "./bin/hub.js",
+    "prepublish": "./ci/build.js",
+    "start": "./bin/hub.js",
+    "test": "./ci/test.js",
+    "test:browser": "karma start",
+    "ui": "./bin/ui.js"
+  },
+  "repository": "realglobe-Inc/sugo-example-arduino",
+  "keywords": [
+    "SUGOS",
+    "example"
+  ],
+  "author": {
+    "name": "FujiHaruka",
+    "email": "fujiharuka@realglobe.jp",
+    "url": "https://github.com/FujiHaruka"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/realglobe-Inc/sugo-example-arduino/issues"
+  },
+  "homepage": "https://github.com/realglobe-Inc/sugo-example-arduino#readme",
+  "dependencies": {
+    "aglob": "^1.0.2",
+    "apeman-asset-javascripts": "^5.0.9",
+    "apeman-react-basic": "^9.0.10",
+    "apeman-react-icon": "^4.0.2",
+    "apemancolor": "^1.2.3",
+    "aport": "^1.0.0",
+    "arequest": "^2.0.7",
+    "asleep": "^1.0.3",
+    "babel-polyfill": "^6.9.1",
+    "classnames": "^2.2.5",
+    "co": "^4.6.0",
+    "colorprint": "^4.0.11",
+    "commander": "^2.9.0",
+    "debug": "^2.2.0",
+    "defaults": "^1.0.3",
+    "execcli": "^4.0.8",
+    "filedel": "^2.0.4",
+    "johnny-five": "^0.10.0",
+    "open": "0.0.5",
+    "pudding": "^4.0.3",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "rimraf": "^2.5.4",
+    "sg-react": "^1.0.11",
+    "sg-react-components": "^1.3.8",
+    "sugo-actor": "^4.1.3",
+    "sugo-agent-compile": "^1.0.13",
+    "sugo-agent-file": "^1.0.10",
+    "sugo-caller": "^2.1.8",
+    "sugo-endpoint-compile": "^2.0.7",
+    "sugo-endpoint-file": "^1.0.7",
+    "sugo-hub": "^3.0.1",
+    "sugo-module-noop": "^4.0.3",
+    "sugo-module-serialport": "^2.0.3",
+    "sugo-observer": "^2.0.4",
+    "sugo-react-example": "^2.0.13"
+  },
+  "devDependencies": {
+    "ababel": "^1.0.25",
+    "ababel-es2015": "^1.0.5",
+    "ababel-react": "^1.0.5",
+    "amocha": "^1.0.13",
+    "ape-tmpl": "^5.0.15",
+    "ape-updating": "^4.0.5",
+    "coz": "^6.0.16",
+    "injectmock": "^2.0.0",
+    "node-sass": "^3.8.0",
+    "sg-karma": "^1.0.4",
+    "sg-travis": "^1.1.27",
+    "sugo-ci-example": "^3.0.4",
+    "sugos-assets": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=6.x",
+    "npm": ">=3.x"
+  },
+  "publishConfig": {
+    "registry": "https://realglobe.artifactoryonline.com/realglobe/api/npm/npm-local"
+  }
+}
