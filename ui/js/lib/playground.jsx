@@ -8,7 +8,8 @@ import {mount} from 'sg-react'
 import {
   ApContainer,
   ApBigButton,
-  ApSelectableArticle
+  ApSelectableArticle,
+  ApSlider
 } from 'apeman-react-basic'
 import co from 'co'
 import sugoCaller from 'sugo-caller'
@@ -29,10 +30,10 @@ const Playground = React.createClass({
     return {
       /** Key of actor to connect */
       actorKey: actors.length > 0 ? actors[ 0 ].key : null,
-      /** Date ping send */
-      pingAt: null,
-      /** Date pong received */
-      pongAt: null
+      /** Arduino servo */
+      servo: null,
+      /** Current actor */
+      actor: null
     }
   },
 
@@ -40,7 +41,7 @@ const Playground = React.createClass({
     const s = this
     let { state, props } = s
     let { actors } = props
-    let { actorKey, pingAt, pongAt } = state
+    let { actorKey, servo } = state
     return (
       <div className='dynamic-component'>
         <ApSelectableArticle
@@ -55,35 +56,17 @@ const Playground = React.createClass({
             <div className='playground-row'>
               <ApContainer>
                 <div className='playground-item'>
-                  <p>Send a ping and receive pong.</p>
+                  <p>Operate servo.</p>
                 </div>
-                <div className='playground-item'>
-                  <ApBigButton
-                    onTap={ () => s.withCaller(function * sendPing (caller) {
-                      if (s.state.pongAt) {
-                        // Reset to send ping
-                        s.setState({ pingAt: null, pongAt: null })
-                        return
-                      }
-
-                      // Set up
-                      let actor = yield caller.connect(actorKey)
-                      let noop = actor.get('noop')
-
-                      // Do ping-pong
-                      console.log('Send ping to noop...')
-                      s.setState({ pingAt: new Date().toLocaleTimeString() })
-                      let pong = yield noop.ping()
-                      s.setState({ pongAt: new Date().toLocaleTimeString() })
-                      console.log(`...received ping from noop: "${pong}"`)
-
-                      // Tear down
-                      yield actor.disconnect()
-                      yield asleep(10)
-                    }) }
-                    spinning={ pingAt && !pongAt }
-                    primary={ !pingAt }
-                  >{ pongAt ? `Pong at ${pongAt}` : (pingAt ? 'Waiting...' : 'Send ping')} </ApBigButton>
+                <div className='playground-item' style={{width: '300px'}}>
+                  <ApSlider
+                    initial={90 }
+                    min={ 0 }
+                    max={ 180 }
+                    onChange={(value) => {
+                      servo.to(Number(value))
+                    }}
+                  />
                 </div>
               </ApContainer>
             </div>
@@ -101,19 +84,52 @@ const Playground = React.createClass({
     const s = this
     let { protocol, host } = window.location
     s.caller = sugoCaller(`${protocol}//${host}/callers`)
+    s.connectServo()
+  },
+
+  componentDidUpdate (prevProp, prevState) {
+    const s = this
+    if (prevState.actorKey !== this.state.actorKey) {
+      return co(function * () {
+        yield s.disconnectServo()
+        yield s.connectServo()
+      }).catch((err) => console.error(err))
+    }
+  },
+
+  componentWillUnmount () {
+    const s = this
+    s.disconnectServo()
   },
 
   // --------------------
   // custom
   // --------------------
 
-  withCaller (handler) {
+  connectServo () {
     const s = this
-    let { caller } = s
-    if (!caller) {
-      return Promise.resolve(false)
-    }
-    return co(handler, caller).catch((err) => console.error(err))
+    return co(function * () {
+      let { actorKey } = s.state
+      let actor = yield s.caller.connect(actorKey)
+      console.log('actor connected')
+      let servo = actor.get('servo')
+      s.setState({ actor, servo })
+    }).catch(err => console.error(err))
+  },
+
+  disconnectServo () {
+    const s = this
+    return co(function * () {
+      let { actor } = s.state
+      if (!actor) {
+        return
+      }
+      yield actor.disconnect()
+      s.setState({
+        actor: null,
+        servo: null
+      })
+    }).catch(err => console.error(err))
   }
 })
 
@@ -128,4 +144,3 @@ let timer = setInterval(() => {
   })).catch((err) => console.error(err))
   clearTimeout(timer)
 }, 100)
-
