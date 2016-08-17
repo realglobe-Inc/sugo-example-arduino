@@ -1,6 +1,6 @@
 {
   "name": "sugo-example-arduino",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "SUGOS example of Arduino",
   "main": "lib",
   "bin": {
