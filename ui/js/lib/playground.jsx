@@ -31,7 +31,7 @@ const Playground = React.createClass({
       /** Key of actor to connect */
       actorKey: actors.length > 0 ? actors[ 0 ].key : null,
       /** Arduino servo */
-      servo: null,
+      servos: [],
       /** Current actor */
       actor: null
     }
@@ -41,7 +41,7 @@ const Playground = React.createClass({
     const s = this
     let { state, props } = s
     let { actors } = props
-    let { actorKey, servo } = state
+    let { actorKey, servos } = state
     return (
       <div className='dynamic-component'>
         <ApSelectableArticle
@@ -53,23 +53,27 @@ const Playground = React.createClass({
           onChange={ (e) => s.setState({ actorKey: e.target.value }) }
         >
           <ApSelectableArticle.Content contentFor={ String(actorKey) }>
-            <div className='playground-row'>
-              <ApContainer>
-                <div className='playground-item'>
-                  <p>Operate servo.</p>
+            {
+              [0, 1, 2, 3].map((id) =>
+                <div className='playground-row' key={ id }>
+                  <ApContainer>
+                    <div className='playground-item'>
+                      <p>Operate servo {id}.</p>
+                    </div>
+                    <div className='playground-item' style={{width: '300px'}}>
+                      <ApSlider
+                        initial={ 40 }
+                        min={ 0 }
+                        max={ 180 }
+                        onChange={(value) => {
+                          servos.to(id, Number(value))
+                        }}
+                      />
+                    </div>
+                  </ApContainer>
                 </div>
-                <div className='playground-item' style={{width: '300px'}}>
-                  <ApSlider
-                    initial={90 }
-                    min={ 0 }
-                    max={ 180 }
-                    onChange={(value) => {
-                      servo.to(Number(value))
-                    }}
-                  />
-                </div>
-              </ApContainer>
-            </div>
+              )
+            }
           </ApSelectableArticle.Content>
         </ApSelectableArticle>
       </div>
@@ -112,8 +116,8 @@ const Playground = React.createClass({
       let { actorKey } = s.state
       let actor = yield s.caller.connect(actorKey)
       console.log('actor connected')
-      let servo = actor.get('servo')
-      s.setState({ actor, servo })
+      let servos = actor.get('servos')
+      s.setState({ actor, servos })
     }).catch(err => console.error(err))
   },
 
@@ -127,7 +131,7 @@ const Playground = React.createClass({
       yield actor.disconnect()
       s.setState({
         actor: null,
-        servo: null
+        servos: null
       })
     }).catch(err => console.error(err))
   }
